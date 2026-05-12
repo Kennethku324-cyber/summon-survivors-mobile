@@ -1,8 +1,0 @@
-res://scenes/boss.tscn::43b295189e89986caea3194f317d0f6e::1778567347::res://.godot/exported/133200997/export-7649a76be24b0454ff92379a9b1bf3ce-boss.scn
-res://scenes/enemy.tscn::18c2b70e139835e206790f7c8ae42494::1778567347::res://.godot/exported/133200997/export-a930820ec0ab16db6719aff4daa500f9-enemy.scn
-res://scenes/experience_gem.tscn::db8e939055045b3cacd56adc8ad33a6e::1778567347::res://.godot/exported/133200997/export-4ff56bafdb4b18347a4a210a0e448044-experience_gem.scn
-res://scenes/heart.tscn::5430eacb6533fdd83c4f3b1fade66e3d::1778567347::res://.godot/exported/133200997/export-79edeac40d592684e55ba74036767dc5-heart.scn
-res://scenes/main.tscn::af2ee2e81b1d5fa401a3231c1c5b7fed::1778567347::res://.godot/exported/133200997/export-3ad5c15c4f3250da0cc7c1af1770d85f-main.scn
-res://scenes/player.tscn::cb5a791555f6f14137d6e7ab718a5cbf::1778567347::res://.godot/exported/133200997/export-234fb6894ec6226e856ab7f825500d3d-player.scn
-res://scenes/projectile.tscn::1b5cdd7649454f05b68359cd9a535a05::1778567347::res://.godot/exported/133200997/export-a882d3c243bffac1c7822c1c45b18505-projectile.scn
-res://scenes/summon.tscn::bfb2b16a39020640f9d3cfa92eca3e4e::1778567347::res://.godot/exported/133200997/export-2041fe5bdf2ebd1eceb2bbf7d74bee0b-summon.scn
