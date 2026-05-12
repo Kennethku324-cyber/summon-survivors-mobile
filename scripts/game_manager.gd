@@ -290,9 +290,11 @@ func _create_hud():
 	# Virtual joystick for touch controls
 	var joystick = load("res://scripts/virtual_joystick.gd").new()
 	joystick.joystick_radius = 70
+	joystick.thumb_radius = 30
 	joystick.position = Vector2(16, vp_size.y - 70 * 2 - 16)
 	joystick.size = Vector2(70 * 2, 70 * 2)
 	hud_root.add_child(joystick)
+	print("Joystick created at: ", joystick.position, " size: ", joystick.size)
 
 	# Hide in-game HUD until game starts
 	hud_root.visible = false

@@ -1,6 +1,6 @@
 extends Control
 
-@export var joystick_radius: float = 80.0
+@export var joystick_radius: float = 70.0
 @export var thumb_radius: float = 30.0
 @export var deadzone: float = 0.15
 
@@ -84,7 +84,13 @@ func _update_actions():
 
 func _draw():
 	var center = Vector2(joystick_radius, joystick_radius)
-	draw_circle(center, joystick_radius, Color(1, 1, 1, 0.4))
-	draw_arc(center, joystick_radius, 0, TAU, 32, Color(1, 1, 1, 0.6), 2.0)
-	draw_circle(center + thumb_offset, thumb_radius, Color(1, 1, 1, 0.8))
-	draw_circle(center + thumb_offset, thumb_radius * 0.5, Color(1, 1, 1, 0.95))
+	# Dark background circle so it's visible on any background
+	draw_circle(center, joystick_radius, Color(0, 0, 0, 0.5))
+	# Outer ring
+	draw_circle(center, joystick_radius, Color(1, 1, 1, 0.25))
+	# Border arc
+	draw_arc(center, joystick_radius, 0, TAU, 32, Color(1, 1, 1, 0.5), 3.0)
+	# Thumb (movable part)
+	draw_circle(center + thumb_offset, thumb_radius, Color(1, 1, 1, 0.7))
+	# Thumb inner dot
+	draw_circle(center + thumb_offset, thumb_radius * 0.4, Color(1, 1, 1, 0.9))
