@@ -80,11 +80,11 @@ func _update_actions():
 		Input.action_release("move_up")
 	else:
 		Input.action_release("move_up")
-	Input.action_release("move_down")
+		Input.action_release("move_down")
 
 func _draw():
 	var center = Vector2(joystick_radius, joystick_radius)
-	draw_circle(center, joystick_radius, Color(1, 1, 1, 0.3))
-	draw_arc(center, joystick_radius, 0, TAU, 32, Color(1, 1, 1, 0.5), 2.0)
-	draw_circle(center + thumb_offset, thumb_radius, Color(1, 1, 1, 0.7))
-	draw_circle(center + thumb_offset, thumb_radius * 0.5, Color(1, 1, 1, 0.85))
+	draw_circle(center, joystick_radius, Color(1, 1, 1, 0.4))
+	draw_arc(center, joystick_radius, 0, TAU, 32, Color(1, 1, 1, 0.6), 2.0)
+	draw_circle(center + thumb_offset, thumb_radius, Color(1, 1, 1, 0.8))
+	draw_circle(center + thumb_offset, thumb_radius * 0.5, Color(1, 1, 1, 0.95))
