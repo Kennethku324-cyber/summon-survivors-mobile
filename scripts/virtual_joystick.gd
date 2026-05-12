@@ -9,8 +9,37 @@ var thumb_offset: Vector2 = Vector2.ZERO
 var current_dir: Vector2 = Vector2.ZERO
 var mouse_pressed: bool = false
 
+# Visual child nodes
+var _bg: ColorRect
+var _thumb: ColorRect
+
 func _ready():
 	custom_minimum_size = Vector2(joystick_radius * 2, joystick_radius * 2)
+	mouse_filter = MOUSE_FILTER_IGNORE
+
+	# Background circle (approximated as square with margin)
+	_bg = ColorRect.new()
+	_bg.color = Color(0, 0, 0, 0.45)
+	_bg.position = Vector2(2, 2)
+	_bg.size = Vector2(joystick_radius * 2 - 4, joystick_radius * 2 - 4)
+	_bg.mouse_filter = MOUSE_FILTER_IGNORE
+	add_child(_bg)
+
+	# Inner ring (smaller square to suggest border)
+	var ring = ColorRect.new()
+	ring.color = Color(1, 1, 1, 0.25)
+	ring.position = Vector2(joystick_radius - 35, joystick_radius - 35)
+	ring.size = Vector2(70, 70)
+	ring.mouse_filter = MOUSE_FILTER_IGNORE
+	add_child(ring)
+
+	# Thumb (movable control)
+	_thumb = ColorRect.new()
+	_thumb.color = Color(1, 1, 1, 0.8)
+	_thumb.position = Vector2(joystick_radius - thumb_radius, joystick_radius - thumb_radius)
+	_thumb.size = Vector2(thumb_radius * 2, thumb_radius * 2)
+	_thumb.mouse_filter = MOUSE_FILTER_IGNORE
+	add_child(_thumb)
 
 func _input(event):
 	if not is_visible_in_tree():
@@ -50,7 +79,7 @@ func _update_joystick(screen_pos: Vector2):
 	var dir = clamped / joystick_radius
 	current_dir = dir if dir.length() > deadzone else Vector2.ZERO
 	_update_actions()
-	queue_redraw()
+	_update_visuals()
 
 func _reset_joystick():
 	thumb_offset = Vector2.ZERO
@@ -58,7 +87,7 @@ func _reset_joystick():
 	touch_index = -1
 	mouse_pressed = false
 	_update_actions()
-	queue_redraw()
+	_update_visuals()
 
 func _update_actions():
 	var x = current_dir.x
@@ -82,15 +111,9 @@ func _update_actions():
 		Input.action_release("move_up")
 		Input.action_release("move_down")
 
-func _draw():
-	var center = Vector2(joystick_radius, joystick_radius)
-	# Dark background circle so it's visible on any background
-	draw_circle(center, joystick_radius, Color(0, 0, 0, 0.5))
-	# Outer ring
-	draw_circle(center, joystick_radius, Color(1, 1, 1, 0.25))
-	# Border arc
-	draw_arc(center, joystick_radius, 0, TAU, 32, Color(1, 1, 1, 0.5), 3.0)
-	# Thumb (movable part)
-	draw_circle(center + thumb_offset, thumb_radius, Color(1, 1, 1, 0.7))
-	# Thumb inner dot
-	draw_circle(center + thumb_offset, thumb_radius * 0.4, Color(1, 1, 1, 0.9))
+func _update_visuals():
+	# Move thumb visual based on thumb_offset
+	_thumb.position = Vector2(
+		joystick_radius + thumb_offset.x - thumb_radius,
+		joystick_radius + thumb_offset.y - thumb_radius
+	)

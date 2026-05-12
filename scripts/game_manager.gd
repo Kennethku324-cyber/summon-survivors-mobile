@@ -294,7 +294,6 @@ func _create_hud():
 	joystick.position = Vector2(16, vp_size.y - 70 * 2 - 16)
 	joystick.size = Vector2(70 * 2, 70 * 2)
 	hud_root.add_child(joystick)
-	print("Joystick created at: ", joystick.position, " size: ", joystick.size)
 
 	# Hide in-game HUD until game starts
 	hud_root.visible = false
