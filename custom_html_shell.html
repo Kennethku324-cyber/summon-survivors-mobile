@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <title>$GODOT_PROJECT_NAME</title>
+$GODOT_HEAD_INCLUDE
+    <style>
+html, body, #canvas {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    color: white;
+    background-color: black;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#canvas {
+    display: block;
+}
+
+#canvas:focus {
+    outline: none;
+}
+
+/* Tap to Play overlay — shown on top of everything until user taps */
+#tap-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#tap-overlay .title {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 3rem;
+    text-shadow: 0 0 30px rgba(255,255,255,0.2);
+}
+
+#tap-overlay .btn {
+    background: #4a4a8a;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 22px 70px;
+    font-size: 2rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 0 40px rgba(74,74,138,0.4);
+    -webkit-tap-highlight-color: transparent;
+}
+
+#tap-overlay .btn:hover {
+    background: #5a5a9a;
+    transform: scale(1.05);
+}
+
+#tap-overlay .btn:active {
+    transform: scale(0.95);
+}
+
+#tap-overlay .hint {
+    color: #888;
+    margin-top: 1.5rem;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+}
+    </style>
+</head>
+<body>
+    <canvas id="canvas">
+        Your browser does not support the canvas tag.
+    </canvas>
+
+    <noscript>
+        Your browser does not support JavaScript.
+    </noscript>
+
+    <div id="tap-overlay">
+        <div class="title">$GODOT_PROJECT_NAME</div>
+        <button class="btn" id="start-btn">點擊開始</button>
+        <div class="hint">Tap to Start</div>
+    </div>
+
+    <script src="$GODOT_URL"></script>
+    <script>
+var GODOT_CONFIG = $GODOT_CONFIG;
+var GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
+var engine = new Engine(GODOT_CONFIG);
+
+var tapOverlay = document.getElementById('tap-overlay');
+var startBtn = document.getElementById('start-btn');
+
+function startEngine() {
+    // Hide the tap overlay
+    tapOverlay.style.display = 'none';
+
+    // Start the engine (AudioContext created after user gesture -> works on iOS)
+    engine.startGame({}).then(function() {
+        // Godot engine is now running
+    }, function(err) {
+        console.error(err);
+        tapOverlay.innerHTML = '<div style="color:red;font-family:Arial;text-align:center;padding:2rem;">Error: ' + (err.message || err) + '</div>';
+        tapOverlay.style.display = 'flex';
+    });
+}
+
+startBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    startEngine();
+});
+
+// Also allow tapping anywhere on the overlay to start
+tapOverlay.addEventListener('click', function() {
+    startEngine();
+});
+
+// Prevent double-tap zoom on iOS
+startBtn.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    startEngine();
+});
+    </script>
+</body>
+</html>
