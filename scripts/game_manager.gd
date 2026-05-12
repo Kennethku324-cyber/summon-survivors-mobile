@@ -287,6 +287,13 @@ func _create_hud():
 	lv_mouse_hint.size = Vector2(400, 30)
 	level_up_panel.add_child(lv_mouse_hint)
 
+	# Virtual joystick for touch controls
+	var joystick = load("res://scripts/virtual_joystick.gd").new()
+	joystick.joystick_radius = 70
+	joystick.position = Vector2(16, vp_size.y - 70 * 2 - 16)
+	joystick.size = Vector2(70 * 2, 70 * 2)
+	hud_root.add_child(joystick)
+
 	# Hide in-game HUD until game starts
 	hud_root.visible = false
 
