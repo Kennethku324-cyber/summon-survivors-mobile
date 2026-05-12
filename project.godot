@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.6")
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+pointing/emulate_mouse_from_touch=true
 
 [autoload]
 

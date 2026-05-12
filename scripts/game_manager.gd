@@ -82,6 +82,15 @@ var hud_root: Control
 var custom_theme: Theme
 var hud_ready: bool = false
 
+# Joystick state for touch controls (built-in nodes only, no external script)
+var _js_active: bool = false
+var _js_touch_id: int = -1
+var _js_dir: Vector2 = Vector2.ZERO
+var _js_container: Control
+var _js_bg: ColorRect
+var _js_thumb: ColorRect
+var _js_ring: ColorRect
+
 @onready var camera: Camera2D = $Camera2D
 @onready var spawn_timer: Timer = $SpawnTimer
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
@@ -289,23 +298,119 @@ func _create_hud():
 	lv_mouse_hint.size = Vector2(400, 30)
 	level_up_panel.add_child(lv_mouse_hint)
 
-	# Virtual joystick for touch controls
-	var joystick = load("res://scripts/virtual_joystick.gd").new()
-	joystick.joystick_radius = 70
-	joystick.thumb_radius = 30
-	# Use anchors to pin to bottom-left corner (always visible regardless of viewport size)
-	joystick.anchor_left = 0.0
-	joystick.anchor_right = 0.0
-	joystick.anchor_top = 1.0
-	joystick.anchor_bottom = 1.0
-	joystick.offset_left = 16
-	joystick.offset_top = -70 * 2 - 16
-	joystick.offset_right = 16 + 70 * 2
-	joystick.offset_bottom = -16
-	hud_root.add_child(joystick)
+	# Virtual joystick for touch controls (built-in nodes only)
+	var js_size = 140
+	_js_container = Control.new()
+	_js_container.anchor_left = 0.0
+	_js_container.anchor_right = 0.0
+	_js_container.anchor_top = 1.0
+	_js_container.anchor_bottom = 1.0
+	_js_container.offset_left = 16
+	_js_container.offset_top = -(js_size + 16)
+	_js_container.offset_right = 16 + js_size
+	_js_container.offset_bottom = -16
+	_js_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud_root.add_child(_js_container)
+
+	_js_bg = ColorRect.new()
+	_js_bg.color = Color(0, 0, 0, 0.5)
+	_js_bg.position = Vector2(0, 0)
+	_js_bg.size = Vector2(js_size, js_size)
+	_js_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_js_container.add_child(_js_bg)
+
+	_js_ring = ColorRect.new()
+	_js_ring.color = Color(1, 1, 1, 0.35)
+	_js_ring.position = Vector2(35, 35)
+	_js_ring.size = Vector2(70, 70)
+	_js_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_js_container.add_child(_js_ring)
+
+	_js_thumb = ColorRect.new()
+	_js_thumb.color = Color(1, 1, 1, 0.8)
+	_js_thumb.position = Vector2(40, 40)
+	_js_thumb.size = Vector2(60, 60)
+	_js_thumb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_js_container.add_child(_js_thumb)
+	print("Joystick created with ColorRect nodes")
 
 	# Hide in-game HUD until game starts
 	hud_root.visible = false
+func _input(event):
+	if not hud_ready or not is_visible_in_tree():
+		return
+	if hud_root and not hud_root.visible:
+		return
+
+	var js_center: Vector2
+	if _js_container and _js_container.is_inside_tree():
+		js_center = _js_container.get_global_position() + Vector2(70, 70)
+	else:
+		return
+
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			var local = event.position - js_center
+			if local.length() <= 105:
+				_js_active = true
+				_js_touch_id = event.index
+				_update_js_from_pos(event.position, js_center)
+		elif not event.pressed and event.index == _js_touch_id:
+			_reset_js()
+	elif event is InputEventScreenDrag and event.index == _js_touch_id:
+		_update_js_from_pos(event.position, js_center)
+	elif event is InputEventMouseButton:
+		if event.pressed:
+			var local = event.position - js_center
+			if local.length() <= 105:
+				_js_active = true
+				_update_js_from_pos(event.position, js_center)
+		elif not event.pressed and _js_active:
+			_reset_js()
+	elif event is InputEventMouseMotion and _js_active:
+		_update_js_from_pos(event.position, js_center)
+
+func _update_js_from_pos(screen_pos: Vector2, center: Vector2):
+	var local = screen_pos - center
+	var clamped = local.limit_length(70)
+	# Update visual thumb position
+	if _js_thumb:
+		_js_thumb.position = Vector2(40 + clamped.x, 40 + clamped.y)
+	# Update direction
+	var dir = clamped / 70
+	_js_dir = dir if dir.length() > 0.15 else Vector2.ZERO
+	_update_js_actions()
+
+func _reset_js():
+	_js_active = false
+	_js_touch_id = -1
+	_js_dir = Vector2.ZERO
+	if _js_thumb:
+		_js_thumb.position = Vector2(40, 40)
+	_update_js_actions()
+
+func _update_js_actions():
+	var x = _js_dir.x
+	var y = _js_dir.y
+	if x < -0.15:
+		Input.action_press("move_left", -x)
+		Input.action_release("move_right")
+	elif x > 0.15:
+		Input.action_press("move_right", x)
+		Input.action_release("move_left")
+	else:
+		Input.action_release("move_left")
+		Input.action_release("move_right")
+	if y < -0.15:
+		Input.action_press("move_up", -y)
+		Input.action_release("move_down")
+	elif y > 0.15:
+		Input.action_press("move_down", y)
+		Input.action_release("move_up")
+	else:
+		Input.action_release("move_up")
+		Input.action_release("move_down")
+
 
 func _load_walkable_map():
 	var tex = load("res://assets/Map1_walkable.png")
