@@ -129,6 +129,8 @@ func _create_hud():
 
 	# Position HUD elements relative to viewport
 	var vp_size = get_viewport().get_visible_rect().size
+	if vp_size.length() == 0:
+		vp_size = Vector2(1152, 648)
 	hud_root.position = Vector2(0, 0)
 	hud_root.size = vp_size
 	var margin = 16
@@ -291,8 +293,15 @@ func _create_hud():
 	var joystick = load("res://scripts/virtual_joystick.gd").new()
 	joystick.joystick_radius = 70
 	joystick.thumb_radius = 30
-	joystick.position = Vector2(16, vp_size.y - 70 * 2 - 16)
-	joystick.size = Vector2(70 * 2, 70 * 2)
+	# Use anchors to pin to bottom-left corner (always visible regardless of viewport size)
+	joystick.anchor_left = 0.0
+	joystick.anchor_right = 0.0
+	joystick.anchor_top = 1.0
+	joystick.anchor_bottom = 1.0
+	joystick.offset_left = 16
+	joystick.offset_top = -70 * 2 - 16
+	joystick.offset_right = 16 + 70 * 2
+	joystick.offset_bottom = -16
 	hud_root.add_child(joystick)
 
 	# Hide in-game HUD until game starts
